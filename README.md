@@ -103,4 +103,6 @@ deliverables/                  Paper draft and presentation materials
 
 ## Deliverables and citations
 
+For a detailed walkthrough of the datasets, model, app workflow, libraries, API use, source files, and limitations, see the [ClearSignal Project Guide PDF](output/pdf/ClearSignal_Project_Guide.pdf).
+
 The paper and presentation files are drafts and must match the experiments actually run. Insert only verified values from the saved evaluation reports. Cite HateXplain and HASOC as listed in the paper references.
