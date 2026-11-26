@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ClearSignal: train benchmark",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["scripts/train_model.py"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "ClearSignal: run dashboard",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "streamlit", "run", "app.py"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

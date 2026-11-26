@@ -1,0 +1,78 @@
+% ACL-style draft. Add acl.sty and acl_natbib.bst from the current official
+% ACL template before compiling. Replace author details before submission.
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{booktabs}
+
+\title{ClearSignal: Explainable Text Review and OCR-Assisted Meme Analysis}
+\author{Student Name \\
+  Department or Course \\
+  Institution \\
+  \texttt{[your email]}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Automated hate speech detection is difficult to trust when a model returns only a label, especially when language is ambiguous and annotators disagree. We present ClearSignal, a classroom research prototype for short-text review with visible model evidence, conservative slang normalization and local reviewer corrections. Its English HateXplain baseline predicts normal, offensive or hate with word/character TF--IDF and logistic regression. For uploaded memes, local OCR extracts visible words and lets a reviewer edit them before text classification. A separate HASOC harmful/not-harmful model supports English, Hindi, Marathi and English--Hindi code-mixed text only after its password-protected training archives are supplied. The English fallback is not validated on memes, and the application does not classify visual image content. Gujarati and Bodo classifier training is not included; Bengali meme analysis is excluded. Results are limited to the available benchmark and the prototype is not an automated moderation system.
+\end{abstract}
+
+\section{Introduction}
+Short posts can depend on irony, quotation, reclaimed language, local slang and conversation history. Memes add visual context that can change how their words read. A classifier that returns only a label can be difficult to review and may learn dataset shortcuts instead of intent.
+
+ClearSignal keeps tasks and labels separate. The interface provides an English text baseline, a multilingual HASOC training workflow, local meme text extraction and human review. It does not claim broad language coverage or image understanding. Reviewer corrections are stored for supervised retraining of the English experiment; no LLM reward model is trained.
+
+\section{Data}
+\paragraph{HateXplain.} HateXplain provides English posts with normal, offensive or hate labels, target-community annotations and human rationale spans \citep{mathew-etal-2021-hatexplain}. The loader derives consensus labels, retains rationale and target annotations, and preserves the official train, validation and test divisions. Source examples may contain harmful text, so individual posts are not displayed by the app.
+
+\paragraph{HASOC.} HASOC 2021 includes English, Hindi, Marathi and English--Hindi code-mixed text tasks \citep{hasoc-2021}. The adapter maps \texttt{HOF} to \texttt{harmful} and \texttt{NOT} to \texttt{not\_harmful}. This broad task is not equivalent to HateXplain's hate class. Training archives are password-protected; no HASOC result is reported until they are accessed and the training script succeeds.
+
+\paragraph{Meme text.} The app can extract visible words from an uploaded image using local macOS Vision or Tesseract and allows a reviewer to correct the extraction. The selected text model receives those words. HASOC 2025 lists Hindi, Gujarati and Bodo meme tasks \citep{hasoc-2025}, but those archives are not included or trained here. Hindi, Marathi and English--Hindi meme text need the trained HASOC text model; English uses the HateXplain fallback when HASOC is unavailable. Gujarati and Bodo have no classifier in this project. Bengali meme analysis is excluded.
+
+\section{Method}
+\subsection{Text baselines and evidence}
+The English classifier combines word unigrams/bigrams and character n-grams with TF--IDF and class-balanced logistic regression. For each prediction, the interface ranks present word features by their positive coefficient-weighted contribution to the selected class. This is a learned feature association, not a causal explanation. Human rationale spans are retained in the data pipeline but are not used to train the initial model.
+
+The separate HASOC workflow uses the same model family with its own binary labels. It creates a fixed-seed stratified 80/20 validation split from training archives and reports aggregate and source-language scores. This is not official test performance.
+
+\subsection{Slang and reviewer feedback}
+A small JSON lexicon expands exact whole-token abbreviations, including a few romanized Hindi forms. The application displays the original and suggested normalized text. Expansions can be wrong and are not translation. Reviewer corrections can be appended to HateXplain training at a 2.0 sample weight; validation and test examples are not updated. This supervised workflow is not RLHF, preference optimization or LLM fine-tuning.
+
+\subsection{Local meme OCR}
+On macOS, the app uses Vision locally when its recognition framework supports the selected language. Other systems can use Tesseract and installed language data. OCR output remains editable. The classifier receives only text and does not analyze scenes, symbols, sarcasm or image-text interaction. OCR may misread stylized or low-resolution text.
+
+\section{Results and status}
+The saved HateXplain report records accuracy 0.6694 and macro F1 0.6573 on 1,924 examples from the official held-out test split. This result applies only to the English text benchmark.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{l l l}
+\toprule
+Experiment & Status & Evaluation \\
+\midrule
+HateXplain English text & Trained & Official test: 0.6694 accuracy, 0.6573 macro F1 \\
+HASOC multilingual text & Not trained & Password-protected data required \\
+Meme review & OCR-assisted text only & No meme-specific evaluation \\
+Gujarati/Bodo classification & Not trained & No prediction is shown \\
+\bottomrule
+\end{tabular}
+\caption{Current local project status. The scores use different tasks and are not directly comparable.}
+\label{tab:results}
+\end{table}
+
+\section{Limitations and responsible use}
+The main classifier is a conventional TF--IDF baseline, not a contextual language model. OCR, language selection and slang normalization can fail. HASOC will cover only its source data once trained. Gujarati and Bodo do not have classifiers here. The app does not understand full visual context, sarcasm or conversation history. Dataset labels can be subjective or biased. No model output should independently trigger punishment or content removal.
+
+\section{Conclusion}
+ClearSignal combines explainable English text classification, a separate multilingual training workflow, local meme text extraction and human review. Future work should train HASOC with registered data and evaluate a license-reviewed meme dataset before making meme-classification claims. These experiments do not constitute LLM reward optimization.
+
+\bibliography{references}
+\bibliographystyle{acl_natbib}
+\end{document}

@@ -1,0 +1,16 @@
+.venv/
+.agents/
+__pycache__/
+*.py[cod]
+.DS_Store
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+data/raw/*
+data/feedback.csv
+artifacts/*
+!data/raw/.gitkeep
+!artifacts/.gitkeep
+/src/mute.py
+/scripts/train_mute.py
